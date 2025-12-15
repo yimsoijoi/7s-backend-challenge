@@ -10,23 +10,30 @@ import (
 )
 
 const (
-	colUser = "users"
+	ColUser = "users"
 )
 
 type UserRepository struct {
 	col *mongo.Collection
 }
 
-func NewUserRepository(db *mongo.Database) *UserRepository {
-	return &UserRepository{col: db.Collection(colUser)}
+func NewUserRepository(db *mongo.Database) domain.UserRepository {
+	return &UserRepository{col: db.Collection(ColUser)}
 }
 
 func (r *UserRepository) Create(ctx context.Context, u *domain.User) error {
-	res, err := r.col.InsertOne(ctx, u)
+	doc, err := toDocument(u)
 	if err != nil {
 		return err
 	}
-	u.ID = res.InsertedID.(primitive.ObjectID).Hex()
+
+	_, err = r.col.InsertOne(ctx, doc)
+	if err != nil {
+		return err
+	}
+
+	u.ID = doc.ID.Hex()
+
 	return nil
 }
 
