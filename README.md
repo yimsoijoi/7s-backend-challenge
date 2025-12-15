@@ -15,7 +15,7 @@ The goal of this project is **clarity and correctness**, not framework magic.
 * JWT authentication (HS256)
 * CRUD operations for users
 * REST API (HTTP)
-* gRPC API
+* gRPC API (*TODO*)
 * MongoDB persistence (official Go driver)
 * Background goroutine to count users
 * Unit tests with mocked interfaces
