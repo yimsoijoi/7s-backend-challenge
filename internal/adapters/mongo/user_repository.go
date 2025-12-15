@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/yimsoijoi/7s-backend-challenge/internal/domain"
+	"github.com/yimsoijoi/7s-backend-challenge/internal/ports"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,7 +18,7 @@ type UserRepository struct {
 	col *mongo.Collection
 }
 
-func NewUserRepository(db *mongo.Database) domain.UserRepository {
+func NewUserRepository(db *mongo.Database) ports.UserRepository {
 	return &UserRepository{col: db.Collection(ColUser)}
 }
 

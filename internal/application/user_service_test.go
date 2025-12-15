@@ -10,8 +10,8 @@ import (
 	"github.com/yimsoijoi/7s-backend-challenge/internal/domain"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/yimsoijoi/7s-backend-challenge/internal/adapters/mongo/mocks"
 	jwtmocks "github.com/yimsoijoi/7s-backend-challenge/internal/infrastructure/mocks"
+	"github.com/yimsoijoi/7s-backend-challenge/internal/ports/mocks"
 )
 
 func TestUserService_Register_Success(t *testing.T) {

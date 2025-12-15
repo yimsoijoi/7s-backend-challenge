@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/yimsoijoi/7s-backend-challenge/internal/domain"
+	"github.com/yimsoijoi/7s-backend-challenge/internal/ports"
 )
 
 type Handler struct {
-	userService domain.UserService
+	userService ports.UserService
 }
 
 func NewHandler(
-	userSvc domain.UserService,
+	userSvc ports.UserService,
 ) *Handler {
 	return &Handler{
 		userService: userSvc,
