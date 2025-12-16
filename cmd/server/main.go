@@ -42,6 +42,11 @@ func main() {
 		_ = mongoClient.Disconnect(shutdownCtx)
 	}()
 
+	err := infrastructure.EnsureMongoIndexes(ctx, mongoDB.Collection("users"))
+	if err != nil {
+		log.Println("!! MongoDB not indexes")
+	}
+
 	ttlMinutes, err := strconv.Atoi(
 		getEnv("JWT_TTL_MINUTES", "15"),
 	)
@@ -74,6 +79,24 @@ func main() {
 		"/users/",
 		httpadapter.Logging(
 			httpadapter.Auth(jwtManager, http.HandlerFunc(handler.GetUser)),
+		),
+	)
+	mux.Handle(
+		"/users/",
+		httpadapter.Logging(
+			httpadapter.Auth(jwtManager, http.HandlerFunc(handler.ListUsers)),
+		),
+	)
+	mux.Handle(
+		"/users/",
+		httpadapter.Logging(
+			httpadapter.Auth(jwtManager, http.HandlerFunc(handler.UpdateUser)),
+		),
+	)
+	mux.Handle(
+		"/users/",
+		httpadapter.Logging(
+			httpadapter.Auth(jwtManager, http.HandlerFunc(handler.DeleteUser)),
 		),
 	)
 

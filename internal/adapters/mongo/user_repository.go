@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -51,9 +52,23 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*domain
 	return &u, err
 }
 
-// real world should have filter
-func (r *UserRepository) FindAll(ctx context.Context) ([]*domain.User, error) {
-	cur, err := r.col.Find(ctx, bson.M{})
+func (r *UserRepository) FindAll(
+	ctx context.Context,
+	// Pagination is not used for now.
+	// The number of users is expected to be small.
+	// We rely on an index on `createdAt` to keep this query fast.
+	// Add pagination if the user list becomes large.
+) ([]*domain.User, error) {
+
+	filter := bson.M{}
+
+	opts := options.Find().
+		SetSort(bson.D{{Key: "createdAt", Value: -1}}).
+		SetProjection(bson.M{
+			"password": 0,
+		})
+
+	cur, err := r.col.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +77,9 @@ func (r *UserRepository) FindAll(ctx context.Context) ([]*domain.User, error) {
 	var users []*domain.User
 	for cur.Next(ctx) {
 		var u domain.User
-		cur.Decode(&u)
+		if err := cur.Decode(&u); err != nil {
+			return nil, err
+		}
 		users = append(users, &u)
 	}
 	return users, nil
