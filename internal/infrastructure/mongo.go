@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -31,4 +32,20 @@ func NewMongoDatabase(cfg MongoConfig) (*mongo.Client, *mongo.Database) {
 	log.Println("MongoDB connected")
 
 	return client, client.Database(cfg.Database)
+}
+
+func EnsureMongoIndexes(ctx context.Context, col *mongo.Collection) error {
+	indexes := []mongo.IndexModel{
+		{
+			Keys: bson.D{{Key: "email", Value: 1}},
+			Options: options.Index().
+				SetUnique(true),
+		},
+		{
+			Keys: bson.D{{Key: "createdAt", Value: -1}},
+		},
+	}
+
+	_, err := col.Indexes().CreateMany(ctx, indexes)
+	return err
 }
