@@ -120,6 +120,10 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if id != r.Header.Get("user-id") {
+		http.Error(w, "cannot update another user's data", http.StatusBadRequest)
+	}
+
 	var req struct {
 		Name  string `json:"name"`
 		Email string `json:"email"`
@@ -154,6 +158,10 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if id == "" {
 		http.Error(w, "missing id", http.StatusBadRequest)
 		return
+	}
+
+	if id != r.Header.Get("user-id") {
+		http.Error(w, "cannot delete another user's data", http.StatusBadRequest)
 	}
 
 	if err := h.userService.Delete(r.Context(), id); err != nil {
